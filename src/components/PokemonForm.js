@@ -1,6 +1,6 @@
 import React from 'react'
 import { Form } from 'semantic-ui-react'
-
+//Questions on bottom of page
 class PokemonForm extends React.Component {
   constructor() {
     super()
@@ -12,8 +12,50 @@ class PokemonForm extends React.Component {
       backUrl: ''
     }
   }
+  getInitialState = () => ({ name: '', hp: '', frontUrl: '', backUrl: '' })
+
+  handleSubmit = (event) => {
+    event.preventDefault()
+    let name = event.target.name.value
+    let hp = event.target.hp.value
+    let frontUrl = event.target.frontUrl.value
+    let backUrl = event.target.backUrl.value
+// is there a better way to do this? line 19-22
+
+        this.setState({
+      name: name,
+      hp: hp,
+      frontUrl: frontUrl,
+      backUrl: backUrl
+    })
+    fetch('http://localhost:3000/pokemon', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify({
+        name,
+        stats: [
+          {
+            value: hp,
+            name: 'hp'
+          }
+        ],
+        sprites: {
+          front: frontUrl,
+          back: backUrl
+        }
+      })
+    }).then(res => res.json())
+        .then(pokemon => this.props.addPokemon(pokemon))
+        .catch(error => console.error(error))
+        this.setState(this.getInitialState())
+  }
+
 
   render() {
+
     return (
       <div>
         <h3>Add a Pokemon!</h3>
@@ -32,3 +74,7 @@ class PokemonForm extends React.Component {
 }
 
 export default PokemonForm
+
+// Questions to Ask:
+//line 23 controlled forms
+
